@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/AppConfig",
+  "$defs": {
+    "AppConfig": {
+      "properties": {
+        "server": {
+          "$ref": "#/$defs/ServerConfig"
+        },
+        "database": {
+          "$ref": "#/$defs/DatabaseConfig"
+        },
+        "kafka": {
+          "$ref": "#/$defs/KafkaConfig"
+        },
+        "healthChecker": {
+          "$ref": "#/$defs/HealthCheckerConfig"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "server",
+        "database",
+        "kafka",
+        "healthChecker"
+      ]
+    },
+    "DatabaseConfig": {
+      "properties": {
+        "connectionString": {
+          "type": "string"
+        },
+        "databaseName": {
+          "type": "string"
+        },
+        "userCollectionName": {
+          "type": "string"
+        },
+        "kafkaOutboxCollectionName": {
+          "type": "string"
+        },
+        "initialRetryDelaySeconds": {
+          "type": "integer"
+        },
+        "userIdName": {
+          "type": "string"
+        },
+        "listUserDefaultLimit": {
+          "type": "integer"
+        },
+        "listUserMaxLimit": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "connectionString",
+        "databaseName",
+        "userCollectionName",
+        "kafkaOutboxCollectionName",
+        "initialRetryDelaySeconds",
+        "userIdName",
+        "listUserDefaultLimit",
+        "listUserMaxLimit"
+      ]
+    },
+    "HealthCheckerConfig": {
+      "properties": {
+        "healthTopicName": {
+          "type": "string"
+        },
+        "bootstrapServer": {
+          "type": "string"
+        },
+        "tickerIntervalSeconds": {
+          "type": "integer"
+        },
+        "ordinaryHealthCheckListeningPort": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "healthTopicName",
+        "bootstrapServer",
+        "tickerIntervalSeconds",
+        "ordinaryHealthCheckListeningPort"
+      ]
+    },
+    "KafkaConfig": {
+      "properties": {
+        "userAddedTopicName": {
+          "type": "string"
+        },
+        "userRemovedTopicName": {
+          "type": "string"
+        },
+        "outbox": {
+          "$ref": "#/$defs/OutboxConfig"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "userAddedTopicName",
+        "userRemovedTopicName",
+        "outbox"
+      ]
+    },
+    "OutboxConfig": {
+      "properties": {
+        "producerSleepIntervalSeconds": {
+          "type": "integer"
+        },
+        "baseRetryTimeSeconds": {
+          "type": "integer"
+        },
+        "maxRetryTimeSeconds": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "producerSleepIntervalSeconds",
+        "baseRetryTimeSeconds",
+        "maxRetryTimeSeconds"
+      ]
+    },
+    "ServerConfig": {
+      "properties": {
+        "listeningPort": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "listeningPort"
+      ]
+    }
+  }
+}

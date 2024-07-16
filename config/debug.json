@@ -1,0 +1,31 @@
+{
+  "$schema": "appconfig.schema.json",
+  "server": {
+    "listeningPort": 9091
+  },
+  "database": {
+    "databaseName": "userservice",
+    "connectionString": "mongodb://localhost:27017/?replicaSet=rs0",
+    "userCollectionName": "user",
+    "kafkaOutboxCollectionName": "kafkaoutbox",
+    "userIdName": "id",
+    "listUserDefaultLimit": 50,
+    "listUserMaxLimit": 200,
+    "initialRetryDelaySeconds": 60
+  },
+  "kafka": {
+    "userAddedTopicName": "faceitbackendtest.user.added",
+    "userRemovedTopicName": "faceitbackendtest.user.removed",
+    "outbox": {
+      "producerSleepIntervalSeconds": 10,
+      "baseRetryTimeSeconds": 60,
+      "maxRetryTimeSeconds": 3600
+    }
+  },
+  "healthChecker": {
+    "bootstrapServer": "0.0.0.0:29092",
+    "healthTopicName": "faceitbackendtest.healthcheck",
+    "tickerIntervalSeconds": 120,
+    "ordinaryHealthCheckListeningPort": 8081
+  }
+}

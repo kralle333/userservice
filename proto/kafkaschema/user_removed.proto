@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option go_package = "userservice/proto/kafkaschema";
+
+package kafkaschema;
+
+message UserRemovedMessage{
+  string id = 1;
+}

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+option go_package = "userservice/proto/grpc";
+
+import "google/protobuf/timestamp.proto";
+
+service UserService{
+  rpc AddUser(AddUserRequest) returns (AddUserResponse){}
+  rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse){}
+  rpc ModifyUser(ModifyUserRequest) returns (ModifyUserResponse){}
+  rpc ListUsers(ListUsersRequest) returns(ListUsersResponse) {}
+}
+
+message ResponseUser{
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string nickname = 4;
+  string email = 5;
+  string country = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+
+}
+
+// ADD USER
+message AddUserRequestUser{
+  string first_name = 1;
+  string last_name = 2;
+  string nickname = 3;
+  string email = 4;
+  string password = 5;
+  string country = 6;
+}
+message AddUserRequest{
+  AddUserRequestUser user = 1;
+}
+
+message AddUserResponse{
+  ResponseUser user = 1;
+}
+
+// REMOVE USER
+////////////////////
+
+message RemoveUserRequest{
+  string userID = 1;
+}
+message RemoveUserResponse{
+  ResponseUser user = 1;
+}
+
+// MODIFY USER
+////////////////////
+
+message ModifyUserRequestUser{
+  optional string first_name = 1;
+  optional string last_name = 2;
+  optional string nickname = 3;
+  optional string email = 4;
+  optional string password = 5;
+  optional string country = 6;
+}
+
+message ModifyUserRequest{
+  string userID = 1;
+  ModifyUserRequestUser user = 2;
+}
+
+message ModifyUserResponse{
+  ResponseUser user = 1;
+}
+
+// LIST USERS
+////////////////////
+
+enum UserField{
+  USER_FIELD_UNSPECIFIED = 0;
+  USER_FIELD_FIRST_NAME = 1;
+  USER_FIELD_SECOND_NAME = 2;
+  USER_FIELD_NICKNAME = 3;
+  USER_FIELD_EMAIL = 4;
+  USER_FIELD_COUNTRY = 5;
+}
+enum Comparer{
+  COMPARER_UNSPECIFIED = 0;
+  COMPARER_GREATER_THAN = 1;
+  COMPARER_GREATER_THAN_EQUAL = 2;
+  COMPARER_LESS_THAN = 3;
+  COMPARER_LESS_THAN_EQUAL = 4;
+  COMPARER_EQUAL = 5;
+}
+
+message PageInfo{
+  int64 limit = 1;
+  string cursor = 2;
+}
+
+enum Ordering{
+  ORDERING_UNSPECIFIED = 0;
+  ORDERING_ASCENDING = 1;
+  ORDERING_DESCENDING = 2;
+}
+
+message SortInfo {
+  UserField by = 1;
+  optional Ordering order = 2;
+}
+
+// left ordering right
+// e.g USER_FIELD_NICKNAME COMPARER_EQUAL "SomeNickname"
+message FilterInfo{
+  UserField left = 1;
+  Comparer comparer = 2;
+  string right = 3;
+}
+
+message ListUsersRequest{
+  optional SortInfo sorting = 1;
+  optional FilterInfo filtering = 2;
+  optional PageInfo paging = 3;
+}
+
+message ListUsersResponse{
+  PageInfo next = 1;
+  repeated ResponseUser users = 2;
+}
