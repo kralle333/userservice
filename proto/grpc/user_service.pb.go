@@ -565,7 +565,7 @@ func (x *RemoveUserResponse) GetUser() *ResponseUser {
 	return nil
 }
 
-type ModifyUserRequestUser struct {
+type UpdateUserRequestUser struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -578,8 +578,8 @@ type ModifyUserRequestUser struct {
 	Country   *string `protobuf:"bytes,6,opt,name=country,proto3,oneof" json:"country,omitempty"`
 }
 
-func (x *ModifyUserRequestUser) Reset() {
-	*x = ModifyUserRequestUser{}
+func (x *UpdateUserRequestUser) Reset() {
+	*x = UpdateUserRequestUser{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_grpc_user_service_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -587,13 +587,13 @@ func (x *ModifyUserRequestUser) Reset() {
 	}
 }
 
-func (x *ModifyUserRequestUser) String() string {
+func (x *UpdateUserRequestUser) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ModifyUserRequestUser) ProtoMessage() {}
+func (*UpdateUserRequestUser) ProtoMessage() {}
 
-func (x *ModifyUserRequestUser) ProtoReflect() protoreflect.Message {
+func (x *UpdateUserRequestUser) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_grpc_user_service_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -605,64 +605,64 @@ func (x *ModifyUserRequestUser) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ModifyUserRequestUser.ProtoReflect.Descriptor instead.
-func (*ModifyUserRequestUser) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdateUserRequestUser.ProtoReflect.Descriptor instead.
+func (*UpdateUserRequestUser) Descriptor() ([]byte, []int) {
 	return file_proto_grpc_user_service_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *ModifyUserRequestUser) GetFirstName() string {
+func (x *UpdateUserRequestUser) GetFirstName() string {
 	if x != nil && x.FirstName != nil {
 		return *x.FirstName
 	}
 	return ""
 }
 
-func (x *ModifyUserRequestUser) GetLastName() string {
+func (x *UpdateUserRequestUser) GetLastName() string {
 	if x != nil && x.LastName != nil {
 		return *x.LastName
 	}
 	return ""
 }
 
-func (x *ModifyUserRequestUser) GetNickname() string {
+func (x *UpdateUserRequestUser) GetNickname() string {
 	if x != nil && x.Nickname != nil {
 		return *x.Nickname
 	}
 	return ""
 }
 
-func (x *ModifyUserRequestUser) GetEmail() string {
+func (x *UpdateUserRequestUser) GetEmail() string {
 	if x != nil && x.Email != nil {
 		return *x.Email
 	}
 	return ""
 }
 
-func (x *ModifyUserRequestUser) GetPassword() string {
+func (x *UpdateUserRequestUser) GetPassword() string {
 	if x != nil && x.Password != nil {
 		return *x.Password
 	}
 	return ""
 }
 
-func (x *ModifyUserRequestUser) GetCountry() string {
+func (x *UpdateUserRequestUser) GetCountry() string {
 	if x != nil && x.Country != nil {
 		return *x.Country
 	}
 	return ""
 }
 
-type ModifyUserRequest struct {
+type UpdateUserRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	UserID string                 `protobuf:"bytes,1,opt,name=userID,proto3" json:"userID,omitempty"`
-	User   *ModifyUserRequestUser `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
+	User   *UpdateUserRequestUser `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 }
 
-func (x *ModifyUserRequest) Reset() {
-	*x = ModifyUserRequest{}
+func (x *UpdateUserRequest) Reset() {
+	*x = UpdateUserRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_grpc_user_service_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -670,13 +670,13 @@ func (x *ModifyUserRequest) Reset() {
 	}
 }
 
-func (x *ModifyUserRequest) String() string {
+func (x *UpdateUserRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ModifyUserRequest) ProtoMessage() {}
+func (*UpdateUserRequest) ProtoMessage() {}
 
-func (x *ModifyUserRequest) ProtoReflect() protoreflect.Message {
+func (x *UpdateUserRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_grpc_user_service_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -688,26 +688,26 @@ func (x *ModifyUserRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ModifyUserRequest.ProtoReflect.Descriptor instead.
-func (*ModifyUserRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdateUserRequest.ProtoReflect.Descriptor instead.
+func (*UpdateUserRequest) Descriptor() ([]byte, []int) {
 	return file_proto_grpc_user_service_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *ModifyUserRequest) GetUserID() string {
+func (x *UpdateUserRequest) GetUserID() string {
 	if x != nil {
 		return x.UserID
 	}
 	return ""
 }
 
-func (x *ModifyUserRequest) GetUser() *ModifyUserRequestUser {
+func (x *UpdateUserRequest) GetUser() *UpdateUserRequestUser {
 	if x != nil {
 		return x.User
 	}
 	return nil
 }
 
-type ModifyUserResponse struct {
+type UpdateUserResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -715,8 +715,8 @@ type ModifyUserResponse struct {
 	User *ResponseUser `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 }
 
-func (x *ModifyUserResponse) Reset() {
-	*x = ModifyUserResponse{}
+func (x *UpdateUserResponse) Reset() {
+	*x = UpdateUserResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_grpc_user_service_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -724,13 +724,13 @@ func (x *ModifyUserResponse) Reset() {
 	}
 }
 
-func (x *ModifyUserResponse) String() string {
+func (x *UpdateUserResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ModifyUserResponse) ProtoMessage() {}
+func (*UpdateUserResponse) ProtoMessage() {}
 
-func (x *ModifyUserResponse) ProtoReflect() protoreflect.Message {
+func (x *UpdateUserResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_grpc_user_service_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -742,12 +742,12 @@ func (x *ModifyUserResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ModifyUserResponse.ProtoReflect.Descriptor instead.
-func (*ModifyUserResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdateUserResponse.ProtoReflect.Descriptor instead.
+func (*UpdateUserResponse) Descriptor() ([]byte, []int) {
 	return file_proto_grpc_user_service_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *ModifyUserResponse) GetUser() *ResponseUser {
+func (x *UpdateUserResponse) GetUser() *ResponseUser {
 	if x != nil {
 		return x.User
 	}
@@ -1097,7 +1097,7 @@ var file_proto_grpc_user_service_proto_rawDesc = []byte{
 	0x76, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x21,
 	0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x52,
 	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x04, 0x75, 0x73, 0x65,
-	0x72, 0x22, 0xa6, 0x02, 0x0a, 0x15, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x55, 0x73, 0x65, 0x72,
+	0x72, 0x22, 0xa6, 0x02, 0x0a, 0x15, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x55, 0x73, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0a, 0x66,
 	0x69, 0x72, 0x73, 0x74, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x48,
 	0x00, 0x52, 0x09, 0x66, 0x69, 0x72, 0x73, 0x74, 0x4e, 0x61, 0x6d, 0x65, 0x88, 0x01, 0x01, 0x12,
@@ -1115,13 +1115,13 @@ var file_proto_grpc_user_service_proto_rawDesc = []byte{
 	0x5f, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x6e,
 	0x69, 0x63, 0x6b, 0x6e, 0x61, 0x6d, 0x65, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x65, 0x6d, 0x61, 0x69,
 	0x6c, 0x42, 0x0b, 0x0a, 0x09, 0x5f, 0x70, 0x61, 0x73, 0x73, 0x77, 0x6f, 0x72, 0x64, 0x42, 0x0a,
-	0x0a, 0x08, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x22, 0x57, 0x0a, 0x11, 0x4d, 0x6f,
-	0x64, 0x69, 0x66, 0x79, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x0a, 0x08, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x72, 0x79, 0x22, 0x57, 0x0a, 0x11, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
 	0x16, 0x0a, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x44, 0x12, 0x2a, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x55, 0x73,
+	0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73,
 	0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x55, 0x73, 0x65, 0x72, 0x52, 0x04, 0x75,
-	0x73, 0x65, 0x72, 0x22, 0x37, 0x0a, 0x12, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x55, 0x73, 0x65,
+	0x73, 0x65, 0x72, 0x22, 0x37, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65,
 	0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x21, 0x0a, 0x04, 0x75, 0x73, 0x65,
 	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
 	0x73, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x22, 0x38, 0x0a, 0x08,
@@ -1192,9 +1192,9 @@ var file_proto_grpc_user_service_proto_rawDesc = []byte{
 	0x6d, 0x6f, 0x76, 0x65, 0x55, 0x73, 0x65, 0x72, 0x12, 0x12, 0x2e, 0x52, 0x65, 0x6d, 0x6f, 0x76,
 	0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x52,
 	0x65, 0x6d, 0x6f, 0x76, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x00, 0x12, 0x37, 0x0a, 0x0a, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x55, 0x73, 0x65,
-	0x72, 0x12, 0x12, 0x2e, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x55, 0x73,
+	0x65, 0x22, 0x00, 0x12, 0x37, 0x0a, 0x0a, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65,
+	0x72, 0x12, 0x12, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x13, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x55, 0x73,
 	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x34, 0x0a, 0x09,
 	0x4c, 0x69, 0x73, 0x74, 0x55, 0x73, 0x65, 0x72, 0x73, 0x12, 0x11, 0x2e, 0x4c, 0x69, 0x73, 0x74,
 	0x55, 0x73, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x12, 0x2e, 0x4c,
@@ -1228,9 +1228,9 @@ var file_proto_grpc_user_service_proto_goTypes = []interface{}{
 	(*AddUserResponse)(nil),       // 6: AddUserResponse
 	(*RemoveUserRequest)(nil),     // 7: RemoveUserRequest
 	(*RemoveUserResponse)(nil),    // 8: RemoveUserResponse
-	(*ModifyUserRequestUser)(nil), // 9: ModifyUserRequestUser
-	(*ModifyUserRequest)(nil),     // 10: ModifyUserRequest
-	(*ModifyUserResponse)(nil),    // 11: ModifyUserResponse
+	(*UpdateUserRequestUser)(nil), // 9: UpdateUserRequestUser
+	(*UpdateUserRequest)(nil),     // 10: UpdateUserRequest
+	(*UpdateUserResponse)(nil),    // 11: UpdateUserResponse
 	(*PageInfo)(nil),              // 12: PageInfo
 	(*SortInfo)(nil),              // 13: SortInfo
 	(*FilterInfo)(nil),            // 14: FilterInfo
@@ -1244,8 +1244,8 @@ var file_proto_grpc_user_service_proto_depIdxs = []int32{
 	4,  // 2: AddUserRequest.user:type_name -> AddUserRequestUser
 	3,  // 3: AddUserResponse.user:type_name -> ResponseUser
 	3,  // 4: RemoveUserResponse.user:type_name -> ResponseUser
-	9,  // 5: ModifyUserRequest.user:type_name -> ModifyUserRequestUser
-	3,  // 6: ModifyUserResponse.user:type_name -> ResponseUser
+	9,  // 5: UpdateUserRequest.user:type_name -> UpdateUserRequestUser
+	3,  // 6: UpdateUserResponse.user:type_name -> ResponseUser
 	0,  // 7: SortInfo.by:type_name -> UserField
 	2,  // 8: SortInfo.order:type_name -> Ordering
 	0,  // 9: FilterInfo.left:type_name -> UserField
@@ -1257,11 +1257,11 @@ var file_proto_grpc_user_service_proto_depIdxs = []int32{
 	3,  // 15: ListUsersResponse.users:type_name -> ResponseUser
 	5,  // 16: UserService.AddUser:input_type -> AddUserRequest
 	7,  // 17: UserService.RemoveUser:input_type -> RemoveUserRequest
-	10, // 18: UserService.ModifyUser:input_type -> ModifyUserRequest
+	10, // 18: UserService.UpdateUser:input_type -> UpdateUserRequest
 	15, // 19: UserService.ListUsers:input_type -> ListUsersRequest
 	6,  // 20: UserService.AddUser:output_type -> AddUserResponse
 	8,  // 21: UserService.RemoveUser:output_type -> RemoveUserResponse
-	11, // 22: UserService.ModifyUser:output_type -> ModifyUserResponse
+	11, // 22: UserService.UpdateUser:output_type -> UpdateUserResponse
 	16, // 23: UserService.ListUsers:output_type -> ListUsersResponse
 	20, // [20:24] is the sub-list for method output_type
 	16, // [16:20] is the sub-list for method input_type
@@ -1349,7 +1349,7 @@ func file_proto_grpc_user_service_proto_init() {
 			}
 		}
 		file_proto_grpc_user_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ModifyUserRequestUser); i {
+			switch v := v.(*UpdateUserRequestUser); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1361,7 +1361,7 @@ func file_proto_grpc_user_service_proto_init() {
 			}
 		}
 		file_proto_grpc_user_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ModifyUserRequest); i {
+			switch v := v.(*UpdateUserRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1373,7 +1373,7 @@ func file_proto_grpc_user_service_proto_init() {
 			}
 		}
 		file_proto_grpc_user_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ModifyUserResponse); i {
+			switch v := v.(*UpdateUserResponse); i {
 			case 0:
 				return &v.state
 			case 1:

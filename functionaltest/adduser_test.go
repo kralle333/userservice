@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"k8s.io/apimachinery/pkg/util/rand"
 	"testing"
-	"userservice/internal/db"
+	"userservice/internal/infrastructure/mongodb"
 	proto "userservice/proto/grpc"
 )
 
@@ -34,7 +34,7 @@ func TestAddUser(t *testing.T) {
 	// DB STATE
 	coll := testerApp.dbConn.Database("functional").Collection("user")
 
-	var userInDB db.User
+	var userInDB mongodb.DBUser
 	err = coll.FindOne(ctx, bson.M{"id": respUser.Id}).Decode(&userInDB)
 	require.NoError(t, err)
 	require.Equal(t, userInDB.ID, respUser.Id)

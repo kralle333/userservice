@@ -5,12 +5,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"userservice/internal/db"
+	"userservice/internal/infrastructure/mongodb"
 )
 
-func getAllUserDBEntries(ctx context.Context, coll *mongo.Collection) []db.User {
+func getAllUserDBEntries(ctx context.Context, coll *mongo.Collection) []mongodb.DBUser {
 	findOptions := options.Find()
-	var results []db.User
+	var results []mongodb.DBUser
 
 	cur, err := coll.Find(ctx, bson.D{{}}, findOptions)
 	if err != nil {
@@ -19,7 +19,7 @@ func getAllUserDBEntries(ctx context.Context, coll *mongo.Collection) []db.User 
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
-		var user db.User
+		var user mongodb.DBUser
 		err = cur.Decode(&user)
 		if err != nil {
 			panic(err)
@@ -35,9 +35,9 @@ func getAllUserDBEntries(ctx context.Context, coll *mongo.Collection) []db.User 
 	return results
 }
 
-func getAllKafkaDBEntries(ctx context.Context, coll *mongo.Collection) []db.KafkaOutboxMessage {
+func getAllKafkaDBEntries(ctx context.Context, coll *mongo.Collection) []mongodb.Message {
 	findOptions := options.Find()
-	var results []db.KafkaOutboxMessage
+	var results []mongodb.Message
 
 	cur, err := coll.Find(ctx, bson.D{{}}, findOptions)
 	if err != nil {
@@ -46,7 +46,7 @@ func getAllKafkaDBEntries(ctx context.Context, coll *mongo.Collection) []db.Kafk
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
-		var msg db.KafkaOutboxMessage
+		var msg mongodb.Message
 		err = cur.Decode(&msg)
 		if err != nil {
 			panic(err)

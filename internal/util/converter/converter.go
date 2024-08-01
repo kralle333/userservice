@@ -1,41 +1,14 @@
 package converter
 
 import (
-	"github.com/google/uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"userservice/internal/db"
-	"userservice/internal/util/crypto"
-	"userservice/internal/util/time"
+	"userservice/internal/domain/model"
+	"userservice/internal/domain/model/listusers"
 	"userservice/proto/grpc"
 	"userservice/proto/kafkaschema"
 )
 
-func CreateUserDBEntry(request *grpc.AddUserRequestUser) db.User {
-
-	id := uuid.New()
-	now := time.DBNow()
-
-	// I know that this is not part of the assignment,
-	// but I couldn't bring myself to store passwords in plaintext,
-	// so I figured this is simple solution to avoid that.
-	salt := crypto.GenerateSalt()
-	hashedPassword := crypto.GenerateHashedPassword(request.Password, salt)
-
-	return db.User{
-		ID:        id.String(),
-		FirstName: request.FirstName,
-		LastName:  request.LastName,
-		Nickname:  request.Nickname,
-		Password:  hashedPassword,
-		Email:     request.Email,
-		Country:   request.Country,
-		Salt:      salt,
-		CreatedAt: now,
-		UpdatedAt: now,
-	}
-}
-
-func FromRepoUserToResponseUser(user db.User) *grpc.ResponseUser {
+func FromDomainUserToResponseUser(user model.User) *grpc.ResponseUser {
 	return &grpc.ResponseUser{
 		Id:        user.ID,
 		FirstName: user.FirstName,
@@ -48,7 +21,24 @@ func FromRepoUserToResponseUser(user db.User) *grpc.ResponseUser {
 	}
 }
 
-func FromRepoUserToKafkaAddedUserMessage(user db.User) *kafkaschema.UserAddedMessage {
+func FromListUsersToResponseListUsers(response listusers.Response) *grpc.ListUsersResponse {
+
+	var grpcUsers []*grpc.ResponseUser
+
+	for _, user := range response.Users {
+		grpcUsers = append(grpcUsers, FromDomainUserToResponseUser(user))
+	}
+
+	return &grpc.ListUsersResponse{
+		Next: &grpc.PageInfo{
+			Limit:  response.Next.Limit,
+			Cursor: response.Next.Cursor,
+		},
+		Users: grpcUsers,
+	}
+}
+
+func FromRepoUserToKafkaAddedUserMessage(user model.User) *kafkaschema.UserAddedMessage {
 	return &kafkaschema.UserAddedMessage{
 		Id:        user.ID,
 		FirstName: user.FirstName,

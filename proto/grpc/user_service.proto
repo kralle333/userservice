@@ -7,7 +7,7 @@ import "google/protobuf/timestamp.proto";
 service UserService{
   rpc AddUser(AddUserRequest) returns (AddUserResponse){}
   rpc RemoveUser(RemoveUserRequest) returns (RemoveUserResponse){}
-  rpc ModifyUser(ModifyUserRequest) returns (ModifyUserResponse){}
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){}
   rpc ListUsers(ListUsersRequest) returns(ListUsersResponse) {}
 }
 
@@ -50,10 +50,10 @@ message RemoveUserResponse{
   ResponseUser user = 1;
 }
 
-// MODIFY USER
+// UPDATE USER
 ////////////////////
 
-message ModifyUserRequestUser{
+message UpdateUserRequestUser{
   optional string first_name = 1;
   optional string last_name = 2;
   optional string nickname = 3;
@@ -62,12 +62,12 @@ message ModifyUserRequestUser{
   optional string country = 6;
 }
 
-message ModifyUserRequest{
+message UpdateUserRequest{
   string userID = 1;
-  ModifyUserRequestUser user = 2;
+  UpdateUserRequestUser user = 2;
 }
 
-message ModifyUserResponse{
+message UpdateUserResponse{
   ResponseUser user = 1;
 }
 

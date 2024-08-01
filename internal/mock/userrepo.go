@@ -1,47 +1,26 @@
 package mock
 
 import (
-	"FACEITBackendTest/internal/db"
 	"context"
 	"errors"
-	"go.mongodb.org/mongo-driver/bson"
+	"userservice/internal/domain/model"
+	"userservice/internal/domain/model/listusers"
+	"userservice/internal/domain/model/updateuser"
 )
 
 const userNotFoundIndex = -1
 
 type UserRepoMock struct {
-	Users         []db.User
-	mockListUsers []db.User
+	Users         []model.User
+	mockListUsers []model.User
 }
 
-func NewUserRepoMock() *UserRepoMock {
-	return &UserRepoMock{
-		Users: []db.User{},
-	}
-}
-
-func (u *UserRepoMock) SetMockListResult(result []db.User) {
-	u.mockListUsers = result
-}
-
-func (u *UserRepoMock) AddUser(ctx context.Context, user db.User) error {
+func (u *UserRepoMock) AddUser(ctx context.Context, user model.User) (model.User, error) {
 	u.Users = append(u.Users, user)
-	return nil
+	return user, nil
 }
 
-func (u *UserRepoMock) RemoveUser(ctx context.Context, id string) (db.User, error) {
-	for i := len(u.Users) - 1; i >= 0; i-- {
-		if u.Users[i].ID != id {
-			continue
-		}
-		toRemove := u.Users[i]
-		u.Users = append(u.Users[:i], u.Users[i+1:]...)
-		return toRemove, nil
-	}
-	return db.User{}, errors.New("user not found")
-}
-
-func (u *UserRepoMock) UpdateUser(ctx context.Context, userID string, updateFilter bson.D) (db.User, error) {
+func (u *UserRepoMock) UpdateUser(ctx context.Context, userID string, updateUser updateuser.Request) (model.User, error) {
 	storedUserIndex := userNotFoundIndex
 	for i, storedUser := range u.Users {
 		if storedUser.ID != userID {
@@ -50,12 +29,34 @@ func (u *UserRepoMock) UpdateUser(ctx context.Context, userID string, updateFilt
 		storedUserIndex = i
 	}
 	if storedUserIndex == userNotFoundIndex {
-		return db.User{}, errors.New("user not found")
+		return model.User{}, errors.New("user not found")
 	}
-	return db.User{}, nil
+	return model.User{}, nil
 }
 
-func (u *UserRepoMock) GetUser(ctx context.Context, id string) (db.User, error) {
+func NewUserRepoMock() *UserRepoMock {
+	return &UserRepoMock{
+		Users: []model.User{},
+	}
+}
+
+func (u *UserRepoMock) SetMockListResult(result []model.User) {
+	u.mockListUsers = result
+}
+
+func (u *UserRepoMock) RemoveUser(ctx context.Context, id string) (model.User, error) {
+	for i := len(u.Users) - 1; i >= 0; i-- {
+		if u.Users[i].ID != id {
+			continue
+		}
+		toRemove := u.Users[i]
+		u.Users = append(u.Users[:i], u.Users[i+1:]...)
+		return toRemove, nil
+	}
+	return model.User{}, errors.New("user not found")
+}
+
+func (u *UserRepoMock) GetUser(ctx context.Context, id string) (model.User, error) {
 
 	for _, storedUser := range u.Users {
 		if storedUser.ID != id {
@@ -63,15 +64,17 @@ func (u *UserRepoMock) GetUser(ctx context.Context, id string) (db.User, error) 
 		}
 		return storedUser, nil
 	}
-	return db.User{}, errors.New("user not found")
+	return model.User{}, errors.New("user not found")
 }
 
-func (u *UserRepoMock) ListUsers(ctx context.Context, limit int64, findFilter bson.D, sortBy bson.D) (db.ListUsersResult, error) {
-
+func (u *UserRepoMock) ListUsers(ctx context.Context, listRequest listusers.Request) (listusers.Response, error) {
 	users := u.mockListUsers
-	return db.ListUsersResult{
-		Cursor: users[len(users)-1].MongoDBID.Hex(),
-		Limit:  limit,
-		Users:  users,
+
+	return listusers.Response{
+		Next: listusers.PageInfo{
+			Limit:  listRequest.Paging.Limit,
+			Cursor: listRequest.Paging.Cursor,
+		},
+		Users: users,
 	}, nil
 }

@@ -77,6 +77,9 @@
         "tickerIntervalSeconds": {
           "type": "integer"
         },
+        "healthCheckTickerIntervalSeconds": {
+          "type": "integer"
+        },
         "ordinaryHealthCheckListeningPort": {
           "type": "integer"
         }
@@ -87,16 +90,14 @@
         "healthTopicName",
         "bootstrapServer",
         "tickerIntervalSeconds",
+        "healthCheckTickerIntervalSeconds",
         "ordinaryHealthCheckListeningPort"
       ]
     },
     "KafkaConfig": {
       "properties": {
-        "userAddedTopicName": {
-          "type": "string"
-        },
-        "userRemovedTopicName": {
-          "type": "string"
+        "topics": {
+          "$ref": "#/$defs/KafkaTopicsConfig"
         },
         "outbox": {
           "$ref": "#/$defs/OutboxConfig"
@@ -105,9 +106,24 @@
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "userAddedTopicName",
-        "userRemovedTopicName",
+        "topics",
         "outbox"
+      ]
+    },
+    "KafkaTopicsConfig": {
+      "properties": {
+        "userAddedTopicName": {
+          "type": "string"
+        },
+        "userRemovedTopicName": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "userAddedTopicName",
+        "userRemovedTopicName"
       ]
     },
     "OutboxConfig": {

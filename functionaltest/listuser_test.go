@@ -8,7 +8,7 @@ import (
 	"sort"
 	"testing"
 	"time"
-	"userservice/internal/db"
+	"userservice/internal/infrastructure/mongodb"
 	"userservice/internal/util/crypto"
 	proto "userservice/proto/grpc"
 )
@@ -25,7 +25,7 @@ func TestListUsers(t *testing.T) {
 	userCount := 5
 	for i := range userCount {
 
-		testUser := db.User{
+		testUser := mongodb.DBUser{
 			ID:        uuid.New().String(),
 			FirstName: names[i],
 			LastName:  "Petersen",

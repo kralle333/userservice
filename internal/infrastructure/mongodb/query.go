@@ -7,11 +7,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
-	"userservice/internal/db"
+	"userservice/internal/domain/model/listusers"
+	"userservice/internal/domain/model/updateuser"
 	"userservice/internal/util/crypto"
 	"userservice/internal/util/time"
 	"userservice/internal/util/validation"
-	"userservice/proto/grpc"
 )
 
 var errInvalidField = errors.New("invalid field")
@@ -21,22 +21,22 @@ var errInvalidCursorNoSeparator = errors.New("cursor is missing separator")
 var errInvalidCursorBadMongoID = errors.New("cursor has incorrect mongoid")
 var errNoSorting = errors.New("invalid sort field")
 
-var userFieldToStringMap = map[grpc.UserField]string{
-	grpc.UserField_USER_FIELD_FIRST_NAME:  "first_name",
-	grpc.UserField_USER_FIELD_SECOND_NAME: "second_name",
-	grpc.UserField_USER_FIELD_COUNTRY:     "country",
-	grpc.UserField_USER_FIELD_EMAIL:       "email",
-	grpc.UserField_USER_FIELD_NICKNAME:    "nickname",
+var userFieldToStringMap = map[listusers.UserField]string{
+	listusers.UserFieldFirstName:  "first_name",
+	listusers.UserFieldSecondName: "second_name",
+	listusers.UserFieldCountry:    "country",
+	listusers.UserFieldEmail:      "email",
+	listusers.UserFieldNickname:   "nickname",
 }
-var orderingToStringMap = map[grpc.Comparer]string{
-	grpc.Comparer_COMPARER_GREATER_THAN:       "$gt",
-	grpc.Comparer_COMPARER_GREATER_THAN_EQUAL: "$gte",
-	grpc.Comparer_COMPARER_LESS_THAN:          "$lt",
-	grpc.Comparer_COMPARER_LESS_THAN_EQUAL:    "$lte",
-	grpc.Comparer_COMPARER_EQUAL:              "$eq",
+var orderingToStringMap = map[listusers.Comparer]string{
+	listusers.ComparerGreaterThan:      "$gt",
+	listusers.ComparerGreaterThanEqual: "$gte",
+	listusers.ComparerLessThan:         "$lt",
+	listusers.ComparerLessThanEqual:    "$lte",
+	listusers.ComparerEqual:            "$eq",
 }
 
-func fieldToString(field grpc.UserField) (string, error) {
+func fieldToString(field listusers.UserField) (string, error) {
 	parsed, ok := userFieldToStringMap[field]
 	if !ok {
 		return "", errInvalidField
@@ -44,7 +44,7 @@ func fieldToString(field grpc.UserField) (string, error) {
 	return parsed, nil
 }
 
-func comparerString(comparer grpc.Comparer) (string, error) {
+func comparerString(comparer listusers.Comparer) (string, error) {
 	parsed, ok := orderingToStringMap[comparer]
 	if !ok {
 		return "", errInvalidComparer
@@ -59,8 +59,8 @@ func getPaginationFilterWhenNoSorting(mongoID string) bson.D {
 	return bson.D{{"_id", bson.D{{"$gt", mongoID}}}}
 }
 
-func getPaginationFilter(rawCursor string, sorting *grpc.SortInfo) (bson.D, error) {
-	mongoID, value, err := DeconstructCursor(rawCursor)
+func getPaginationFilter(rawCursor string, sorting *listusers.SortInfo) (bson.D, error) {
+	mongoID, value, err := deconstructCursor(rawCursor)
 
 	// let's log when getting a bad cursor to make it easier to debug with frontenders
 	if err != nil && !errors.Is(err, errNoCursor) {
@@ -90,7 +90,7 @@ func getPaginationFilter(rawCursor string, sorting *grpc.SortInfo) (bson.D, erro
 	}, nil
 }
 
-func getFilterFilter(filter *grpc.FilterInfo) (bson.D, error) {
+func getFilterFilter(filter *listusers.FilterInfo) (bson.D, error) {
 
 	// 3 components of this filter: left side (fieldFormat), center (orderingFormat) and right (string
 
@@ -114,9 +114,9 @@ func getFilterFilter(filter *grpc.FilterInfo) (bson.D, error) {
 	}, nil
 }
 
-// ConstructListUsersFilter using the approach found here https://medium.com/swlh/mongodb-pagination-fast-consistent-ece2a97070f3
+// constructListUsersFilter using the approach found here https://medium.com/swlh/mongodb-pagination-fast-consistent-ece2a97070f3
 // TLDR: keyset pagination using internal mongodb _id for ties, which is possible because of how _id are generated
-func ConstructListUsersFilter(filter *grpc.FilterInfo, sorting *grpc.SortInfo, rawCursor string) bson.D {
+func constructListUsersFilter(filter *listusers.FilterInfo, sorting *listusers.SortInfo, rawCursor string) bson.D {
 
 	paginationFilter, err := getPaginationFilter(rawCursor, sorting)
 
@@ -141,13 +141,13 @@ func ConstructListUsersFilter(filter *grpc.FilterInfo, sorting *grpc.SortInfo, r
 	}
 }
 
-func ConstructListUsersSortBy(sortBy *grpc.SortInfo) bson.D {
+func constructListUsersSortBy(sortBy *listusers.SortInfo) bson.D {
 	if sortBy == nil {
-		return bson.D{{"_id", grpc.Ordering_ORDERING_ASCENDING}}
+		return bson.D{{"_id", 1}}
 	}
 
 	order := 1
-	if sortBy.Order != nil && *sortBy.Order == grpc.Ordering_ORDERING_DESCENDING {
+	if sortBy.Order != nil && *sortBy.Order == listusers.OrderingDescending {
 		order = -1
 	}
 
@@ -159,9 +159,7 @@ func ConstructListUsersSortBy(sortBy *grpc.SortInfo) bson.D {
 
 }
 
-func ConstructUpdateFilter(modifiedUser *grpc.ModifyUserRequestUser, passwordSalt string) (bson.D, error) {
-
-	// use optional property to only update what the client wishes to update
+func constructUpdateFilter(modifiedUser updateuser.Request, passwordSalt string) (bson.D, error) {
 	a := bson.D{}
 	if modifiedUser.FirstName != nil {
 		a = append(a, bson.E{Key: "first_name", Value: *modifiedUser.FirstName})
@@ -196,19 +194,19 @@ func ConstructUpdateFilter(modifiedUser *grpc.ModifyUserRequestUser, passwordSal
 	return bson.D{{"$set", a}}, nil
 }
 
-func getValue(user db.User, field grpc.UserField) string {
+func getValue(user DBUser, field listusers.UserField) string {
 	switch field {
-	case grpc.UserField_USER_FIELD_UNSPECIFIED:
+	case listusers.UserFieldUnspecified:
 		return ""
-	case grpc.UserField_USER_FIELD_FIRST_NAME:
+	case listusers.UserFieldFirstName:
 		return user.FirstName
-	case grpc.UserField_USER_FIELD_SECOND_NAME:
+	case listusers.UserFieldSecondName:
 		return user.LastName
-	case grpc.UserField_USER_FIELD_NICKNAME:
+	case listusers.UserFieldNickname:
 		return user.Nickname
-	case grpc.UserField_USER_FIELD_EMAIL:
+	case listusers.UserFieldEmail:
 		return user.Email
-	case grpc.UserField_USER_FIELD_COUNTRY:
+	case listusers.UserFieldCountry:
 		return user.Country
 	}
 
@@ -216,12 +214,15 @@ func getValue(user db.User, field grpc.UserField) string {
 	return ""
 }
 
-func ConstructCursor(user db.User, sortByField grpc.UserField) string {
-	value := getValue(user, sortByField)
-	return fmt.Sprintf("%s:%s", user.MongoDBID.Hex(), value)
+func constructCursor(user DBUser, sortByField *listusers.SortInfo) string {
+	sortFilter := ""
+	if sortByField != nil && sortByField.By != listusers.UserFieldUnspecified {
+		sortFilter = getValue(user, sortByField.By)
+	}
+	return fmt.Sprintf("%s:%s", user.MongoDBID.Hex(), sortFilter)
 }
 
-func DeconstructCursor(cursor string) (string, string, error) {
+func deconstructCursor(cursor string) (string, string, error) {
 	if cursor == "" {
 		return "", "", errNoCursor
 	}

@@ -1,20 +1,20 @@
 package mock
 
 import (
-	"FACEITBackendTest/internal/kafkamessage"
 	"bytes"
 	"context"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"userservice/internal/infrastructure/messaging"
 )
 
 type KafkaServiceMock struct {
-	Messages []kafkamessage.InternalMessage
+	Messages []messaging.KafkaInternalMessage
 }
 
 func NewKafkaServiceMock() *KafkaServiceMock {
 	return &KafkaServiceMock{
-		Messages: []kafkamessage.InternalMessage{},
+		Messages: []messaging.KafkaInternalMessage{},
 	}
 }
 
@@ -26,7 +26,7 @@ func (k *KafkaServiceMock) Run(stopChannel chan struct{}) {
 	panic("implement me")
 }
 
-func (k *KafkaServiceMock) produce(ctx context.Context, msg kafkamessage.InternalMessage) error {
+func (k *KafkaServiceMock) produce(ctx context.Context, msg messaging.KafkaInternalMessage) error {
 	k.Messages = append(k.Messages, msg)
 
 	return nil

@@ -14,8 +14,10 @@
     "initialRetryDelaySeconds": 60
   },
   "kafka": {
-    "userAddedTopicName": "faceitbackendtest.user.added",
-    "userRemovedTopicName": "faceitbackendtest.user.removed",
+    "topics": {
+      "userAddedTopicName": "userservice.user.added",
+      "userRemovedTopicName": "userservice.user.removed"
+    },
     "outbox": {
       "producerSleepIntervalSeconds": 10,
       "baseRetryTimeSeconds": 60,
@@ -23,8 +25,9 @@
     }
   },
   "healthChecker": {
+    "healthCheckTickerIntervalSeconds": 100,
     "bootstrapServer": "0.0.0.0:29092",
-    "healthTopicName": "faceitbackendtest.healthcheck",
+    "healthTopicName": "userservice.healthcheck",
     "tickerIntervalSeconds": 120,
     "ordinaryHealthCheckListeningPort": 8081
   }

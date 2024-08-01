@@ -7,19 +7,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"testing"
 	"time"
-	"userservice/internal/db"
+	"userservice/internal/infrastructure/mongodb"
 	"userservice/internal/util/crypto"
 	proto "userservice/proto/grpc"
 )
 
 func pointerString(s string) *string { return &s }
 
-func TestModifyUser(t *testing.T) {
+func TestUpdateUser(t *testing.T) {
 	ctx := context.Background()
 	defer testerApp.clearDB()
 
 	userID := uuid.New().String()
-	testUser := db.User{
+	testUser := mongodb.DBUser{
 		ID:        userID,
 		FirstName: "Tylar",
 		LastName:  "Jewel",
@@ -36,7 +36,7 @@ func TestModifyUser(t *testing.T) {
 	_, err := coll.InsertOne(ctx, testUser)
 	require.NoError(t, err)
 
-	modifiedUser := proto.ModifyUserRequestUser{
+	modifiedUser := proto.UpdateUserRequestUser{
 		FirstName: pointerString("Rain"),
 		LastName:  pointerString("Kinsley"),
 		Nickname:  pointerString("Regn"),
@@ -45,7 +45,7 @@ func TestModifyUser(t *testing.T) {
 		Country:   pointerString("DK"),
 	}
 
-	resp, err := testerApp.grpcClient.ModifyUser(ctx, &proto.ModifyUserRequest{
+	resp, err := testerApp.grpcClient.UpdateUser(ctx, &proto.UpdateUserRequest{
 		UserID: userID,
 		User:   &modifiedUser,
 	})
@@ -60,7 +60,7 @@ func TestModifyUser(t *testing.T) {
 	require.Equal(t, *modifiedUser.LastName, respUser.LastName)
 	require.Equal(t, *modifiedUser.Email, respUser.Email)
 
-	var userInDB db.User
+	var userInDB mongodb.DBUser
 	err = coll.FindOne(ctx, bson.M{"id": respUser.Id}).Decode(&userInDB)
 	require.NoError(t, err)
 	require.Equal(t, userID, userInDB.ID)
@@ -71,7 +71,7 @@ func TestModifyUser(t *testing.T) {
 	require.Equal(t, *modifiedUser.Email, userInDB.Email)
 
 	// nil request
-	resp, err = testerApp.grpcClient.ModifyUser(ctx, &proto.ModifyUserRequest{
+	resp, err = testerApp.grpcClient.UpdateUser(ctx, &proto.UpdateUserRequest{
 		UserID: userID,
 		User:   nil,
 	})
@@ -79,9 +79,9 @@ func TestModifyUser(t *testing.T) {
 	require.Nil(t, resp)
 
 	// empty request
-	resp, err = testerApp.grpcClient.ModifyUser(ctx, &proto.ModifyUserRequest{
+	resp, err = testerApp.grpcClient.UpdateUser(ctx, &proto.UpdateUserRequest{
 		UserID: userID,
-		User:   &proto.ModifyUserRequestUser{},
+		User:   &proto.UpdateUserRequestUser{},
 	})
 	require.NoError(t, err)
 	require.NotNil(t, resp)

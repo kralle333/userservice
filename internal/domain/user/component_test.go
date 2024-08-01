@@ -1,21 +1,20 @@
 package user
 
 import (
-	"FACEITBackendTest/internal/config"
-	"FACEITBackendTest/internal/db"
-	"FACEITBackendTest/internal/mock"
-	"FACEITBackendTest/internal/util/crypto"
-	timeutil "FACEITBackendTest/internal/util/time"
-	"FACEITBackendTest/proto/grpc"
 	"context"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"userservice/internal/domain/model"
+	"userservice/internal/domain/model/adduser"
+	"userservice/internal/domain/model/listusers"
+	"userservice/internal/mock"
+	timeutil "userservice/internal/util/time"
 )
 
-func getSuccessfulUserRequest() *grpc.AddUserRequestUser {
+func getSuccessfulUserRequest() adduser.Request {
 
-	return &grpc.AddUserRequestUser{
+	return adduser.Request{
 		FirstName: "John",
 		LastName:  "Smith",
 		Nickname:  "Security Expert",
@@ -25,25 +24,18 @@ func getSuccessfulUserRequest() *grpc.AddUserRequestUser {
 	}
 }
 
-func getMocks() (*mock.UserRepoMock, db.TransactionExecutor, db.KafkaMessageSender) {
-	return mock.NewUserRepoMock(), mock.NewTransactionExecutorMock(), mock.NewKafkaFailStoreMock()
-}
-
-var mockConfig = config.AppConfig{}
-
 // / ADDING USERS
 // ///////////////
 
 // TODO: Figure out how to write tests with mocked transaction
 func TestSuccessAddUser(t *testing.T) {
-	t.Skip("missing implementation")
-	mockUserRepo, mockExecutor, mockKafkaMessageSender := getMocks()
-	c := NewUserComponent(mockUserRepo, mockExecutor, mockKafkaMessageSender, mockConfig.Kafka)
+	mockUserRepo := mock.NewUserRepoMock()
+	c := NewUserComponent(mockUserRepo)
 
 	addedUser, err := c.AddUser(context.Background(), getSuccessfulUserRequest())
 	require.NoError(t, err)
 
-	parsedUUID, err := uuid.Parse(addedUser.Id)
+	parsedUUID, err := uuid.Parse(addedUser.ID)
 	require.NoError(t, err)
 
 	user, err := mockUserRepo.GetUser(context.Background(), parsedUUID.String())
@@ -55,8 +47,8 @@ func TestSuccessAddUser(t *testing.T) {
 }
 
 func TestFailAddUserWithBadCountryCode(t *testing.T) {
-	mockUserRepo, mockExecutor, mockKafkaMessageSender := getMocks()
-	c := NewUserComponent(mockUserRepo, mockExecutor, mockKafkaMessageSender, mockConfig.Kafka)
+	mockUserRepo := mock.NewUserRepoMock()
+	c := NewUserComponent(mockUserRepo)
 
 	u := getSuccessfulUserRequest()
 	u.Country = "DENMARK"
@@ -64,8 +56,8 @@ func TestFailAddUserWithBadCountryCode(t *testing.T) {
 	require.Error(t, err)
 }
 func TestFailAddUserWithBadEmail(t *testing.T) {
-	mockUserRepo, mockExecutor, mockKafkaMessageSender := getMocks()
-	c := NewUserComponent(mockUserRepo, mockExecutor, mockKafkaMessageSender, mockConfig.Kafka)
+	mockUserRepo := mock.NewUserRepoMock()
+	c := NewUserComponent(mockUserRepo)
 
 	u := getSuccessfulUserRequest()
 	u.Email = "foo@bar"
@@ -73,8 +65,8 @@ func TestFailAddUserWithBadEmail(t *testing.T) {
 	require.Error(t, err)
 }
 func TestFailEmptyField(t *testing.T) {
-	mockUserRepo, mockExecutor, mockKafkaMessageSender := getMocks()
-	c := NewUserComponent(mockUserRepo, mockExecutor, mockKafkaMessageSender, mockConfig.Kafka)
+	mockUserRepo := mock.NewUserRepoMock()
+	c := NewUserComponent(mockUserRepo)
 
 	u := getSuccessfulUserRequest()
 	u.Nickname = ""
@@ -110,11 +102,9 @@ func TestFailEmptyField(t *testing.T) {
 /// REMOVING USERS
 /////////////////
 
-// TODO: Figure out how to write tests with mocked transaction
 func TestSuccessRemoveUser(t *testing.T) {
-	t.Skip("missing implementation")
-	mockUserRepo, mockExecutor, mockKafkaMessageSender := getMocks()
-	c := NewUserComponent(mockUserRepo, mockExecutor, mockKafkaMessageSender, config.KafkaConfig{})
+	mockUserRepo := mock.NewUserRepoMock()
+	c := NewUserComponent(mockUserRepo)
 
 	userToRemove, err := c.AddUser(context.Background(), getSuccessfulUserRequest())
 	require.NoError(t, err)
@@ -126,43 +116,41 @@ func TestSuccessRemoveUser(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	parsedUUID, err := uuid.Parse(userToRemove.Id)
+	parsedUUID, err := uuid.Parse(userToRemove.ID)
 	require.NoError(t, err)
 
 	removedUser, err := c.RemoveUser(context.Background(), parsedUUID.String())
 	require.NoError(t, err)
 	require.Equal(t, len(mockUserRepo.Users), otherUsersToAdd)
-	require.Equal(t, userToRemove.Id, removedUser.Id)
+	require.Equal(t, userToRemove.ID, removedUser.ID)
 
 	// TODO: check outbox
 }
 
-// TODO: Figure out how to write tests with mocked transaction
 func TestFailNoUserWithID(t *testing.T) {
-	t.Skip("missing implementation")
-	mockUserRepo, mockExecutor, mockKafkaMessageSender := getMocks()
-	c := NewUserComponent(mockUserRepo, mockExecutor, mockKafkaMessageSender, mockConfig.Kafka)
+	mockUserRepo := mock.NewUserRepoMock()
+	c := NewUserComponent(mockUserRepo)
 
 	addedUser, err := c.AddUser(context.Background(), getSuccessfulUserRequest())
 	require.NoError(t, err)
 
 	// very unlikely to clash, but doesn't hurt to be aware of the case
 	invalidID := uuid.New()
-	for invalidID.String() == addedUser.Id {
+	for invalidID.String() == addedUser.ID {
 		invalidID = uuid.New()
 	}
 
-	user, err := c.RemoveUser(context.Background(), invalidID.String())
+	_, err = c.RemoveUser(context.Background(), invalidID.String())
 	require.Error(t, err)
-	require.Nil(t, user)
+
 }
 
 // / LISTING USERS
 // ///////////////
 
-func createDummyDBUser() db.User {
+func createDummyDBUser() model.User {
 	now := timeutil.DBNow()
-	return db.User{
+	return model.User{
 		ID:        uuid.New().String(),
 		FirstName: "John",
 		LastName:  "Tester",
@@ -170,23 +158,23 @@ func createDummyDBUser() db.User {
 		Password:  "1234!",
 		Email:     "test@email.com",
 		Country:   "DK",
-		Salt:      crypto.GenerateSalt(),
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
+
 }
 
 func TestSuccessListUsers(t *testing.T) {
-	mockUserRepo, mockExecutor, mockKafkaMessageSender := getMocks()
-	mockUserRepo.SetMockListResult([]db.User{
+	mockUserRepo := mock.NewUserRepoMock()
+	mockUserRepo.SetMockListResult([]model.User{
 		createDummyDBUser(),
 		createDummyDBUser(),
 		createDummyDBUser(),
 	})
-	c := NewUserComponent(mockUserRepo, mockExecutor, mockKafkaMessageSender, mockConfig.Kafka)
+	c := NewUserComponent(mockUserRepo)
 
-	_, err := c.ListUsers(context.Background(), &grpc.ListUsersRequest{
-		Paging: &grpc.PageInfo{
+	_, err := c.ListUsers(context.Background(), listusers.Request{
+		Paging: &listusers.PageInfo{
 			Cursor: "",
 			Limit:  25,
 		},

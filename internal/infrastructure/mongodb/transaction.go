@@ -1,4 +1,4 @@
-package db
+package mongodb
 
 import (
 	"context"
@@ -6,12 +6,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type TransactionExecutor interface {
-	ExecuteInTransaction(ctx context.Context, inner func(mongo.SessionContext) error) error
-}
-
-func (m *MongoDBRepo) ExecuteInTransaction(ctx context.Context, inner func(mongo.SessionContext) error) error {
-	session, err := m.client.StartSession()
+func (c *Connection) executeInTransaction(ctx context.Context, inner func(ctx mongo.SessionContext) error) error {
+	session, err := c.client.StartSession()
 	if err != nil {
 		return err
 	}

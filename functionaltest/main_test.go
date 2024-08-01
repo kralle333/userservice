@@ -107,7 +107,7 @@ func addKafkaConsumer() {
 
 	fmt.Printf("Created Consumer %v\n", c)
 
-	kc := testerApp.serverConfig.Kafka
+	kc := testerApp.serverConfig.Kafka.Topics
 
 	err = c.SubscribeTopics([]string{kc.UserAddedTopicName, kc.UserRemovedTopicName}, nil)
 	if err != nil {

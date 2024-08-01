@@ -1,13 +1,6 @@
-//go:build needs_kafka
-// +build needs_kafka
-
 package functionaltest
 
 import (
-	"FACEITBackendTest/internal/db"
-	"FACEITBackendTest/internal/util/crypto"
-	proto "FACEITBackendTest/proto/grpc"
-	"FACEITBackendTest/proto/kafkaschema"
 	"context"
 	"encoding/json"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
@@ -16,7 +9,13 @@ import (
 	"k8s.io/apimachinery/pkg/util/rand"
 	"testing"
 	"time"
+	"userservice/internal/infrastructure/mongodb"
+	"userservice/internal/util/crypto"
+	proto "userservice/proto/grpc"
+	"userservice/proto/kafkaschema"
 )
+
+const waitingTime = 10 * time.Second
 
 func TestKafkaServiceAddUser(t *testing.T) {
 	ctx := context.Background()
@@ -44,13 +43,13 @@ func TestKafkaServiceAddUser(t *testing.T) {
 	require.NoError(t, err)
 	respUser := user.User
 
-	timeOutTimer := time.NewTimer(5 * time.Second)
+	timeOutTimer := time.NewTimer(waitingTime)
 	select {
 	case <-timeOutTimer.C:
 		require.FailNow(t, "timed out waiting for kafka message to arrive!")
 	case msg := <-waitingChannel:
 		messageTopic := *msg.TopicPartition.Topic
-		require.Equal(t, testerApp.serverConfig.Kafka.UserAddedTopicName, messageTopic)
+		require.Equal(t, testerApp.serverConfig.Kafka.Topics.UserAddedTopicName, messageTopic)
 		var parsed kafkaschema.UserAddedMessage
 		err := json.Unmarshal(msg.Value, &parsed)
 		require.NoError(t, err)
@@ -72,7 +71,7 @@ func TestKafkaServiceRemoveUser(t *testing.T) {
 	defer testerApp.consumer.clearCommunicationChannel()
 
 	// setting up data for later removal
-	testUser := db.User{
+	testUser := mongodb.DBUser{
 		ID:        uuid.New().String(),
 		FirstName: "Hest",
 		LastName:  "Petersen",
@@ -100,13 +99,13 @@ func TestKafkaServiceRemoveUser(t *testing.T) {
 	respUser := user.User
 
 	// KAFKA STATE
-	timeOutTimer := time.NewTimer(5 * time.Second)
+	timeOutTimer := time.NewTimer(waitingTime)
 	select {
 	case <-timeOutTimer.C:
 		require.FailNow(t, "timed out waiting for kafka message to arrive!")
 	case msg := <-waitingChannel:
 		messageTopic := *msg.TopicPartition.Topic
-		require.Equal(t, testerApp.serverConfig.Kafka.UserRemovedTopicName, messageTopic)
+		require.Equal(t, testerApp.serverConfig.Kafka.Topics.UserRemovedTopicName, messageTopic)
 		var parsed kafkaschema.UserRemovedMessage
 		err := json.Unmarshal(msg.Value, &parsed)
 		require.NoError(t, err)

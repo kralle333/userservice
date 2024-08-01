@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"userservice/internal"
+	"userservice/internal/application"
 	"userservice/internal/config"
 )
 
@@ -22,7 +22,7 @@ func main() {
 		panic(fmt.Sprintf("failed to read config: %v", err))
 	}
 
-	app := internal.NewApp(cfg)
+	app := application.NewApp(cfg)
 	err = app.Run()
 	if err != nil {
 		panic(err)

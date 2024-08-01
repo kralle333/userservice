@@ -7,8 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
-	"userservice/internal/db"
-	"userservice/internal/kafkamessage"
+	"userservice/internal/infrastructure/messaging"
+	"userservice/internal/infrastructure/mongodb"
 	"userservice/internal/util/crypto"
 	proto "userservice/proto/grpc"
 	"userservice/proto/kafkaschema"
@@ -19,7 +19,7 @@ func TestRemoveUser(t *testing.T) {
 	defer testerApp.clearDB()
 
 	// setting up data for later removal
-	testUser := db.User{
+	testUser := mongodb.DBUser{
 		ID:        uuid.New().String(),
 		FirstName: "Hest",
 		LastName:  "Petersen",
@@ -57,11 +57,11 @@ func TestRemoveUser(t *testing.T) {
 
 	outboxEntries := getAllKafkaDBEntries(ctx, testerApp.kafkaOutboxCollection)
 	require.Len(t, outboxEntries, 1)
-	var msg kafkamessage.InternalMessage
+	var msg messaging.KafkaInternalMessage
 	err = json.Unmarshal(outboxEntries[0].Data, &msg)
 	require.NoError(t, err)
 	require.Equal(t, outboxEntries[0].MsgID, msg.ID)
-	require.Equal(t, testerApp.serverConfig.Kafka.UserRemovedTopicName, msg.TopicID)
+	require.Equal(t, testerApp.serverConfig.Kafka.Topics.UserRemovedTopicName, msg.TopicID)
 	require.Equal(t, testUser.ID, string(msg.Key))
 	var removedMsg kafkaschema.UserRemovedMessage
 	err = json.Unmarshal(msg.Value, &removedMsg)

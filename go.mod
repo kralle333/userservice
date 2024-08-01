@@ -8,6 +8,7 @@ require (
 	github.com/invopop/jsonschema v0.12.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/pariz/gountries v0.1.6
+	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.33.0
 	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.16.0

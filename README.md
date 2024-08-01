@@ -6,4 +6,4 @@ Uses mongodb for storage and is set up to use Kafka for raising events.
 
 ## Features
 
-Add/remove/modify/list users
+Add/remove/update/list users
