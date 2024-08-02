@@ -1,5 +1,7 @@
 # Golang User Service
-Simple backend service for handling users, features:
+Simple backend service for handling user data.
+
+## Features
 - add/remove/update/list users
 - uses grpc for handling requests
 - event raising using kafka, using proto for schemas
